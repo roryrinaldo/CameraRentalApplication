@@ -1,0 +1,157 @@
+<?php
+session_start();
+error_reporting(0);
+include('includes/config.php');
+include('includes/format_rupiah.php');
+include('includes/library.php');
+if(strlen($_SESSION['alogin'])==0){	
+header('location:index.php');
+}else{
+	if(isset($_POST['submit'])){
+		$status = $_POST['status'];
+		$kode = $_POST['id'];
+		$mySql	= "UPDATE penjualan SET status = '$status' WHERE id_penjualan='$kode'";
+		$myQry	= mysqli_query($koneksidb, $mySql);
+
+
+		echo "<script type='text/javascript'>
+				alert('Status berhasil diupdate.'); 
+				document.location = 'data_pembelian.php'; 
+			</script>";
+	}else {
+	}
+	
+
+?>
+<!doctype html>
+<html lang="en" class="no-js">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta name="theme-color" content="#3e454c">
+	
+	<title>Gudang Kamera Pekanbaru | Admin Edit Sewa Kamera</title>
+
+	<!-- Font awesome -->
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<!-- Sandstone Bootstrap CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<!-- Bootstrap Datatables -->
+	<link rel="stylesheet" href="css/dataTables.bootstrap.min.css">
+	<!-- Bootstrap social button library -->
+	<link rel="stylesheet" href="css/bootstrap-social.css">
+	<!-- Bootstrap select -->
+	<link rel="stylesheet" href="css/bootstrap-select.css">
+	<!-- Bootstrap file input -->
+	<link rel="stylesheet" href="css/fileinput.min.css">
+	<!-- Awesome Bootstrap checkbox -->
+	<link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
+	<!-- Admin Stye -->
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<?php include('includes/header.php');?>
+	<div class="ts-main-content">
+	<?php include('includes/leftbar.php');?>
+		<div class="content-wrapper">
+			<div class="container-fluid">
+
+				<div class="row">
+					<div class="col-md-12">
+					
+						<h2 class="page-title">Edit Status Pembeli</h2>
+
+						<div class="row">
+							<div class="col-md-12">
+								<div class="panel panel-default">
+									<div class="panel-heading">Info Pembeli</div>
+									<div class="panel-body">
+										<?php 
+										$id=$_GET['id'];
+										$sqlsewa = "SELECT penjualan.*,kamera.*,merek.*,users.* FROM penjualan,kamera,merek,users WHERE penjualan.id_kamera=kamera.id_kamera
+													AND merek.id_merek=kamera.id_merek AND users.email=penjualan.email AND penjualan.id_penjualan ='$id'";
+										$querysewa = mysqli_query($koneksidb,$sqlsewa);
+										$result = mysqli_fetch_array($querysewa);
+										$biayamobil=$result['durasi']*$result['harga_sewa'];
+										$total = $biayamobil;
+										?>
+
+										<form method="post" class="form-horizontal" name="theform" enctype="multipart/form-data">
+										<div class="form-group">
+											<label class="col-sm-2 control-label">Kode Sewa</label>
+											<div class="col-sm-4">
+												<input type="text" name="id" class="form-control" value="<?php echo $id;?>" required readonly>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-2 control-label">Status<span style="color:red">*</span></label>
+											<div class="col-sm-4">
+												<select class="form-control" name="status" required>
+														<?php
+															$stt = $result['status'];
+															echo "<option style='color:red;' value='$stt' selected>".strtoupper($stt)."</option>";
+                                                            echo "<option value='Diterima'>".strtoupper("Diterima")."</option>";
+                                                            echo "<option value='Selesai'>".strtoupper("Selesai")."</option>";
+															echo "<option value='Cancel'>".strtoupper("Cancel")."</option>";
+														?>
+												</select>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-2 control-label">Penyewa</label>
+											<div class="col-sm-4">
+												<input type="text" name="penyewa" class="form-control" value="<?php echo $result['nama_user'];?>" required readonly>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-2 control-label">Telepon</label>
+											<div class="col-sm-4">
+												<input type="text" name="telp" class="form-control" value="<?php echo $result['telp'];?>" required readonly>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-sm-2 control-label">Alamat</label>
+											<div class="col-sm-4">
+												<textarea col="5" name="alamat" class="form-control" readonly><?php echo $result['alamat'];?></textarea>
+											</div>
+										</div>
+										<div class="form-group">
+											<div class="col-sm-3">
+												<div class="checkbox checkbox-inline">
+													<button class="btn btn-primary" type="submit" name="submit" style="margin-top:4%">Simpan Perubahan</button>
+												</div>
+											</div>
+										</div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+				
+						
+				
+					</div>
+				</div>
+			<!-- COntainer Fluid-->			
+			</div>
+		</div>
+	</div>
+</div>
+
+	<!-- Loading Scripts -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap-select.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script src="js/dataTables.bootstrap.min.js"></script>
+	<script src="js/Chart.min.js"></script>
+	<script src="js/fileinput.js"></script>
+	<script src="js/chartData.js"></script>
+	<script src="js/main.js"></script>
+</body>
+</html>
+<?php } ?>
